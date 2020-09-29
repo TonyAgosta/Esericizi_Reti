@@ -11,22 +11,19 @@ public class Ufficio {
     private ThreadPoolExecutor executor;
 
     public Ufficio() {
-        executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+        executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);// creo un threadpool di dimensione fissa=4
     }
 
-    public void executeTask(Task[] task, int k) {
-       // System.out.println("qui1");
+    public void executeTask(Task[] task, int k) {// metodo che manda in esecuzione i task
         for (int i = 0; i < k; i++) {
-            if(Array.get(task, i) != null)
+            if (Array.get(task, i) != null)
                 executor.execute(task[i]);
             try {
-                Thread.sleep(5000);
+                Thread.sleep(5000); // faccio una sleep in modo da sfruttare al meglio il riuso
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
-        // executor.execute(task[0]);
     }
 
     public void endUfficio() {
