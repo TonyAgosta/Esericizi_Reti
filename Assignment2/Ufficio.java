@@ -1,33 +1,30 @@
-import java.util.concurrent.Executors;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.*;
-import java.lang.reflect.Array;
-import java.lang.*;
-import java.lang.Math;
+import java.util.concurrent.TimeUnit;
 
 public class Ufficio {
     private ThreadPoolExecutor executor;
+    private ArrayBlockingQueue<Runnable> coda;
 
-    public Ufficio() {
-        executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);// creo un threadpool di dimensione fissa=4
+    public Ufficio(int k) {
+        this.coda = new ArrayBlockingQueue<>(k);
+        this.executor = new ThreadPoolExecutor(4, 4, 60L, TimeUnit.MILLISECONDS, coda);
     }
 
-    public void executeTask(Task[] task, int k) {// metodo che manda in esecuzione i task
-        for (int i = 0; i < k; i++) {
-            if (Array.get(task, i) != null)
-                executor.execute(task[i]);
-            try {
-                Thread.sleep(5000); // faccio una sleep in modo da sfruttare al meglio il riuso
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    public void executeTask(Object task) {
+        System.out.println("Nella sala piccola e`arrivato un nuovo task");
+        this.executor.execute((Runnable) task);
+
+        try {
+            Thread.sleep(5000); // faccio una sleep in modo da sfruttare al meglio il riuso
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+
     }
 
     public void endUfficio() {
-        executor.shutdown();
+        this.executor.shutdown();
     }
 
 }
