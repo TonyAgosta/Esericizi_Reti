@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.concurrent.locks.*;
 
 public class Laboratorio {
-    final Lock lockcoda;
+    final ReentrantLock lockcoda;
     final Condition pcFree;
     final Condition labFull;
     final Condition tesistaFree;
@@ -21,11 +21,11 @@ public class Laboratorio {
     }
 
     // metodo che controlla se l'intero laboratorio e` occupato o meno
-    // e restitusce true se trova tutti i computer occupati, false se ne trova
-    // almeno uno libero
+    // e restitusce true se trova tutti i computer liberi, false se ne trova
+    // almeno uno occupato
     public boolean interolaboratoriolibero() {
         for (int i = 0; i < 20; i++) {
-            if (computer.get(i) == "not free")
+            if (computer.get(i).equals("notfree"))
                 return false;
         }
         return true;
@@ -35,14 +35,15 @@ public class Laboratorio {
     public int computerliberi() {
         int numeropcliberi = 0;// variabile in cui salvo il numero totale di pc liberi
         for (int i = 0; i < 20; i++)
-            if (computer.get(i) == "free")
-                numeropcliberi++;
+            if (computer.get(i).equals("free"))
+                ;
+        numeropcliberi++;
         return numeropcliberi;
     }
 
     // controllo che il computer richisto dal tesista sia libero
     public boolean computertesista(int index) {
-        if (computer.get(index) == "free")
+        if (computer.get(index).equals("free"))
             return true;
         else
             return false;
@@ -51,7 +52,7 @@ public class Laboratorio {
     // restituisco l'indice del primo pc libero
     public int computerlibero() {
         for (int i = 0; i < 20; i++) {
-            if (computer.get(i) == "free")
+            if (computer.get(i).equals("free"))
                 return i;
         }
         return 404; // da sistemare

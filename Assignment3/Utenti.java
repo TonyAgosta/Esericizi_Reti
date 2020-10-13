@@ -3,28 +3,24 @@ import java.util.concurrent.locks.*;
 public class Utenti extends Thread {
     private int priority;
     private int access;
-    private int totaleutenti;
+    // private int totaleutenti;
     private int indextesista; // indice del computer usati dai tesisti
-    final Lock lockcoda;
-    final Condition notFull;
-    final Condition notEmpty;
     private Laboratorio lab;
 
-    public Utenti(int priority, int access, int totaleutenti, Laboratorio lab) {
+    // costruttore
+    public Utenti(int priority, int access, int indextesista, Laboratorio lab) {
         this.priority = priority;
         this.access = access; // numero degli accessi al laboratorio che fa ogni utente
-        this.totaleutenti = totaleutenti;// numero totale di utenti che devono accedere al laboratorio
-        this.indextesista = (int) (Math.random() * 20);
-        lockcoda = new ReentrantLock();
-        notFull = lockcoda.newCondition();
-        notEmpty = lockcoda.newCondition();
+        // this.totaleutenti = totaleutenti;// numero totale di utenti che devono
+        // accedere al laboratorio
+        this.indextesista = indextesista;
         this.lab = lab;
     }
 
     public void run() {
 
         int j;
-        for (int i = 0; i < totaleutenti; i++) {
+        for (int i = 0; i < access; i++) {
 
             // studente
             if (this.priority == 1) {
@@ -37,20 +33,27 @@ public class Utenti extends Thread {
                     }
                 }
                 j = lab.computerlibero();// indice del primo computer constrassegnato come free
-                System.out.printf("Lo studente %s ha avuto accesso al laboratorio\n", Thread.currentThread().getName());
-                lab.lockcoda.unlock();
-                lab.occupasingolopc(j); // set del pc appeno occupato a notfree
-                for (int l = 0; l < access; l++) {
-                    try {
-                        Thread.currentThread().sleep(3000); // uso la sleep per simulare l'utilizzo del computer
-                                                            // compresi i momenti in cui esce dal laboratorio
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                while (j == 404) {
+                    j = lab.computerlibero();
                 }
+                System.out.printf("Lo studente %s ha occupato il computer %d\n", Thread.currentThread().getName(), j);
+
+                lab.occupasingolopc(j); // set del pc appeno occupato a notfree
+                lab.lockcoda.unlock();
+                try {
+                    Thread.currentThread().sleep(3000); // uso la sleep per simulare l'utilizzo del computer
+                                                        // compresi i momenti in cui esce dal laboratorio
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                System.out.printf("Lo studente %s ha liberato il computer %d\n", Thread.currentThread().getName(), j);
                 lab.lockcoda.lock();
                 lab.liberapc(j);// set a free del computer dopo aver finito di utilizzarlo
+                lab.labFull.signal();
+                lab.tesistaFree.signal();
                 lab.pcFree.signal();
+
                 lab.lockcoda.unlock();
             }
             // tesista
@@ -63,20 +66,25 @@ public class Utenti extends Thread {
                         e.printStackTrace();
                     }
                 }
-                System.out.printf("Il tesista %s ha avuto accesso al laboraotrio\n", Thread.currentThread().getName());
-                lab.lockcoda.unlock();
+                System.out.printf("Il tesista %s ha occupato il computer numero %d\n", Thread.currentThread().getName(),
+                        indextesista);
+
                 lab.occupasingolopc(indextesista); // set del pc richiesto dal tesista a notfree
-                for (int l = 0; l < access; l++) {
-                    try {
-                        Thread.currentThread().sleep(3000); // uso la sleep per simulare l'utilizzo del computer
-                                                            // compresi i momenti in cui esce dal laboratorio
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                lab.lockcoda.unlock();
+                try {
+                    Thread.currentThread().sleep(3000); // uso la sleep per simulare l'utilizzo del computer
+                                                        // compresi i momenti in cui esce dal laboratorio
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                System.out.printf("Il tesista %s ha liberato il computer numero %d\n", Thread.currentThread().getName(),
+                        indextesista);
                 lab.lockcoda.lock();
                 lab.liberapc(indextesista);// set a free del computer dopo aver finito di utilizzarlo
+
+                lab.labFull.signal();
                 lab.tesistaFree.signal();
+                lab.pcFree.signal();
                 lab.lockcoda.unlock();
 
             }
@@ -93,23 +101,24 @@ public class Utenti extends Thread {
                 }
                 System.out.printf("Il professore %s ha occupato tutto il laboratorio\n",
                         Thread.currentThread().getName());
-                lab.lockcoda.unlock();
                 lab.occupacomputer();// set di tutti i computer a notfree
-                for (int l = 0; l < access; l++) {
-                    try {
-                        Thread.currentThread().sleep(3000); // uso la sleep per simulare l'utilizzo del computer
-                                                            // compresi i momenti in cui esce dal laboratorio
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                lab.lockcoda.unlock();
+
+                try {
+                    Thread.currentThread().sleep(3000); // sleep per simulare l'utilizzo del computer
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                System.out.printf("Il professore %s ha liberato tutto il laboratorio\n",
+                        Thread.currentThread().getName());
                 lab.lockcoda.lock();
                 lab.liberalaboratorio();
-                lab.labFull.signalAll(); // signalAll per seganalare a tutti che i computer sono tutti liberi
+                lab.labFull.signalAll();
+                lab.tesistaFree.signalAll();
+                lab.pcFree.signalAll();
                 lab.lockcoda.unlock();
             }
 
         }
-
     }
 }
