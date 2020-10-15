@@ -41,8 +41,9 @@ public class Utenti extends Thread {
                 lab.occupasingolopc(j); // set del pc appeno occupato a notfree
                 lab.lockcoda.unlock();
                 try {
-                    Thread.currentThread().sleep(3000); // uso la sleep per simulare l'utilizzo del computer
-                                                        // compresi i momenti in cui esce dal laboratorio
+                    Thread.sleep((long) (Math.random() * 4000)); // uso la sleep per simulare l'utilizzo
+                                                                 // del computer
+                    // compresi i momenti in cui esce dal laboratorio
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -72,8 +73,9 @@ public class Utenti extends Thread {
                 lab.occupasingolopc(indextesista); // set del pc richiesto dal tesista a notfree
                 lab.lockcoda.unlock();
                 try {
-                    Thread.currentThread().sleep(3000); // uso la sleep per simulare l'utilizzo del computer
-                                                        // compresi i momenti in cui esce dal laboratorio
+                    Thread.sleep((long) (Math.random() * 4000)); // uso la sleep per simulare l'utilizzo
+                                                                 // del computer
+                    // compresi i momenti in cui esce dal laboratorio
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -105,18 +107,25 @@ public class Utenti extends Thread {
                 lab.lockcoda.unlock();
 
                 try {
-                    Thread.currentThread().sleep(3000); // sleep per simulare l'utilizzo del computer
+                    Thread.sleep((long) (Math.random() * 4000)); // sleep per simulare l'utilizzo del
+                                                                 // computer
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                lab.lockcoda.lock();
                 System.out.printf("Il professore %s ha liberato tutto il laboratorio\n",
                         Thread.currentThread().getName());
-                lab.lockcoda.lock();
                 lab.liberalaboratorio();
-                lab.labFull.signalAll();
-                lab.tesistaFree.signalAll();
-                lab.pcFree.signalAll();
+                lab.labFull.signal();
+                lab.tesistaFree.signal();
+                lab.pcFree.signal();
                 lab.lockcoda.unlock();
+            }
+            try {
+                Thread.sleep((long) (Math.random() * 4000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
         }

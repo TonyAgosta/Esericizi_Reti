@@ -18,27 +18,31 @@ public class Main {
         scan.close();
         indextesista = (int) (Math.random() * 20);
         totaleutenti = numprofessori + numstudenti + numtesisti;
-        System.out.println("indextesista`:" + indextesista);
-        int k = (int) (Math.random() * 5) + 1; // numero di accessi di ogni utente
-        System.out.println("Il numero di accessi e`:" + k);
 
         ArrayList<Utenti> codautenti = new ArrayList<>();
         Laboratorio laboratorio = new Laboratorio();
 
-        // Assumo che ha la precenda sugli altri il thread che hai valore di priority
-        // associato piu` alto
-        priority = 1;// associo priorita` 1 agli studentis
-        for (i = 0; i < numstudenti; i++) {
-            codautenti.add(new Utenti(priority, k, indextesista, laboratorio));
-        }
-        priority = 2;// associo priorita` 2 ai tesisti
-        for (i = 0; i < numtesisti; i++) {
-            codautenti.add(new Utenti(priority, k, indextesista, laboratorio));
-        }
+        // Assumo che ha la precedenza sugli altri il thread che ha il valore di
+        // priority associato piu` alto
+        int k = (int) (Math.random() * 5) + 1; // numero di accessi di ogni professore
+        System.out.println("Il numerod i accessi dei professori e`:" + k);
         priority = 3;// associo priorita` 3 ai professori
         for (i = 0; i < numprofessori; i++) {
             codautenti.add(new Utenti(priority, k, indextesista, laboratorio));
         }
+        k = (int) (Math.random() * 5) + 1; // numero di accessi di ogni tesista
+        System.out.println("Il numerod i accessi dei tesisti e`:" + k);
+        priority = 2;// associo priorita` 2 ai tesisti
+        for (i = 0; i < numtesisti; i++) {
+            codautenti.add(new Utenti(priority, k, indextesista, laboratorio));
+        }
+        k = (int) (Math.random() * 5) + 1; // numero di accessi di ogni studente
+        System.out.println("Il numerod i accessi degli studenti e`:" + k);
+        priority = 1;// associo priorita` 1 agli studentis
+        for (i = 0; i < numstudenti; i++) {
+            codautenti.add(new Utenti(priority, k, indextesista, laboratorio));
+        }
+
         // faccio partire i thread
         for (i = 0; i < totaleutenti; i++) {
             codautenti.get(i).start();
