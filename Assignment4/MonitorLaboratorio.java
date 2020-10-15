@@ -3,86 +3,105 @@ import java.util.ArrayList;
 
 public class MonitorLaboratorio {
 
-    ArrayList<String> computer;
+    private ArrayList<String> computer;
+    private boolean lockvariable = true;
+    private int numprofessorieaccessi;
+    private int numtesistieaccessi;
+    private int indextesista;
 
     // costruttore
-    public MonitorLaboratorio() {
+    public MonitorLaboratorio(int numprofessorieaccessi, int numtesistieaccessi, int indextesista) {
         this.computer = new ArrayList<>(20);
         for (int i = 0; i < 20; i++) {
             computer.add(i, "free");
         }
+        this.numprofessorieaccessi = numprofessorieaccessi;
+        this.numtesistieaccessi = numtesistieaccessi;
+        this.indextesista = indextesista;
 
     }
 
-    public synchronized void take(String flag, int indextesista) {
+    public synchronized void take(String flag) {
         if (flag == "stud") {
-            while (computerliberi() == 0) {
+            while (!lockvariable || computerliberi() == 0) {
                 try {
+                    System.out.println("stud waiting");
                     this.wait();
-
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-            int j = computerlibero();
-            while (j == 404) {
-                j = computerlibero();
-            }
-            occupasingolopc(j);
-            System.out.printf("Lo studente %s ha occupato il pc numero %d\n", Thread.currentThread().getName(), j);
-            try {
-                Thread.sleep((long) (Math.random() * 4000));
-            } catch (InterruptedException e) {
 
-                e.printStackTrace();
             }
-            liberapc(j);
-            System.out.printf("Lo studente %s ha liberato il pc numero %d\n", Thread.currentThread().getName(), j);
+            lockvariable = true;
             this.notifyAll();
         }
-
         if (flag == "tes") {
-            while (!computertesista(indextesista)) {
+            while (!lockvariable || !computertesista(indextesista)) {
+                try {
+                    System.out.println("tes waiting");
+                    this.wait();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+            lockvariable = true;
+            this.notifyAll();
+            this.numtesistieaccessi--;
+
+        }
+        if (flag == "prof") {
+            while (!lockvariable || !interolaboratoriolibero()) {
+                try {
+                    System.out.println("prof waiting");
+                    this.wait();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+            lockvariable = false;
+            this.notifyAll();
+            this.numprofessorieaccessi--;
+        }
+
+    }
+
+    public synchronized void rilascia(String flag) {
+        if (flag == "stud") {
+            while (!lockvariable) {
+                System.out.println("while1");
                 try {
                     this.wait();
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            System.out.printf("il tesista %s ha occupato  il pc numero %d\n", Thread.currentThread().getName(),
-                    indextesista);
-            occupasingolopc(indextesista);
-            try {
-                Thread.sleep((long) (Math.random() * 4000));
-            } catch (InterruptedException e) {
-
-                e.printStackTrace();
+            lockvariable = true;
+            this.notifyAll();
+        }
+        if (flag == "tes") {
+            while (!lockvariable) {
+                System.out.println("while2");
+                try {
+                    this.wait();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            liberapc(indextesista);
-            System.out.printf("il tesista %s ha liberato il pc numero %d\n", Thread.currentThread().getName(),
-                    indextesista);
+            lockvariable = true;
             this.notifyAll();
         }
         if (flag == "prof") {
-            while (!interolaboratoriolibero()) {
+            while (lockvariable) {
+                System.out.println("while3");
                 try {
                     this.wait();
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            System.out.printf("il professore %s ha occupato il laboratorio\n", Thread.currentThread().getName());
-            occupacomputer();
-            try {
-                Thread.sleep((long) (Math.random() * 4000));
-            } catch (InterruptedException e) {
-
-                e.printStackTrace();
-            }
-            liberalaboratorio();
-            System.out.printf("il professore %s ha liberato il laboratorio\n", Thread.currentThread().getName());
+            lockvariable = true;
             this.notifyAll();
         }
     }
@@ -101,8 +120,7 @@ public class MonitorLaboratorio {
         int numeropcliberi = 0;// variabile in cui salvo il numero totale di pc liberi
         for (int i = 0; i < 20; i++)
             if (computer.get(i).equals("free"))
-                ;
-        numeropcliberi++;
+                numeropcliberi++;
         return numeropcliberi;
     }
 
