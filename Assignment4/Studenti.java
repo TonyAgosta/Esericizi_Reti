@@ -1,20 +1,21 @@
+//Tony Agosta 544090
+
 public class Studenti extends Thread {
     private MonitorLaboratorio ML;
 
     private int access;
-    private int numtesistieaccessi;
-    private int numprofessorieaccessi;
 
-    public Studenti(MonitorLaboratorio ML, int numtesistieaccessi, int numprofessorieaccessi, int access) {
+    public Studenti(MonitorLaboratorio ML, int access) throws NullPointerException {
+        if (ML == null)
+            throw new NullPointerException();
         this.ML = ML;
-        this.numtesistieaccessi = numtesistieaccessi;
-        this.numprofessorieaccessi = numprofessorieaccessi;
         this.access = access;
     }
 
     public void run() {
         int i = 0;
-
+        // ciclo fin quando il thread non ha finito il numero di accessi identificato
+        // dalla variabile this.access
         while (i < access) {
 
             ML.take("stud");

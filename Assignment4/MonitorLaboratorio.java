@@ -1,111 +1,124 @@
+//Tony Agosta 544090
+
 import java.util.ArrayList;
 //La classe MonitorLaboratorio e` il tutor che regola gli accessi
 
 public class MonitorLaboratorio {
 
     private ArrayList<String> computer;
-    private boolean lockvariable = true;
-    private int numprofessorieaccessi;
-    private int numtesistieaccessi;
+    private boolean lockvariable = true; // variabile condivisa per simulare la lock
     private int indextesista;
 
     // costruttore
-    public MonitorLaboratorio(int numprofessorieaccessi, int numtesistieaccessi, int indextesista) {
-        this.computer = new ArrayList<>(20);
+    public MonitorLaboratorio(int indextesista) {
+        this.computer = new ArrayList<>(20); // set di tutti i pc a "free"
         for (int i = 0; i < 20; i++) {
             computer.add(i, "free");
         }
-        this.numprofessorieaccessi = numprofessorieaccessi;
-        this.numtesistieaccessi = numtesistieaccessi;
         this.indextesista = indextesista;
 
     }
 
+    // metodo synchronized che serve per mettere in attesa il thread che lo invoca
+    // al verificarsi di determinate condizioni, altrimenti "prende" la
+    // variabile lockvariabile
     public synchronized void take(String flag) {
         if (flag == "stud") {
             while (!lockvariable || computerliberi() == 0) {
                 try {
-                    System.out.println("stud waiting");
+                    System.out.printf("Lo studente %s sta aspettando\n", Thread.currentThread().getName());
                     this.wait();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
             }
-            lockvariable = true;
-            this.notifyAll();
+            lockvariable = true; // lo studente lascia la variabile lockvariable a true in modo da far
+                                 // "entrare" nel laboratorio anche i tesisti lasciando la variabile
+                                 // disponibile anche per essi
+            this.notifyAll(); // sveglio tutti i thread in attesa in modo da notificare che la variabile è
+                              // disponibile per consentire ad altri utenti di accedere
         }
         if (flag == "tes") {
             while (!lockvariable || !computertesista(indextesista)) {
                 try {
-                    System.out.println("tes waiting");
+                    System.out.printf("Il tesista %s sta aspettando\n", Thread.currentThread().getName());
                     this.wait();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
             }
-            lockvariable = true;
-            this.notifyAll();
-            this.numtesistieaccessi--;
+            lockvariable = true;// il tesista lascia la variabile lockvariable a true in modo da far
+                                // "entrare" nel laboratorio anche gli studenti lasciando la variabile
+                                // disponibile anche per essi
+            this.notifyAll();// sveglio tutti i thread in attesa in modo da notificare che la variabile è
+                             // disponibile per consentire ad altri utenti di accedere
 
         }
         if (flag == "prof") {
             while (!lockvariable || !interolaboratoriolibero()) {
                 try {
-                    System.out.println("prof waiting");
+                    System.out.printf("Il professore %s sta aspettando\n", Thread.currentThread().getName());
                     this.wait();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
             }
-            lockvariable = false;
+            lockvariable = false; // il professore setta la variabile lockvariable a false per impedire agli altri
+                                  // utenti di accedere al laboratorio
             this.notifyAll();
-            this.numprofessorieaccessi--;
         }
 
     }
 
+    // metodo synchronized che serve per impostare la variabile condivisa
+    // lockvariable a true o false in base al thread che lo invoca
     public synchronized void rilascia(String flag) {
         if (flag == "stud") {
             while (!lockvariable) {
-                System.out.println("while1");
                 try {
                     this.wait();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            lockvariable = true;
-            this.notifyAll();
+            lockvariable = true; // set a true della variabile condivisa lockvariable per permettere ad altri
+                                 // thread di occuparla
+            this.notifyAll(); // sveglio i thread in attesa per avvisarli che la variabile condivisa è
+                              // disponibile
         }
         if (flag == "tes") {
             while (!lockvariable) {
-                System.out.println("while2");
                 try {
                     this.wait();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            lockvariable = true;
-            this.notifyAll();
+            lockvariable = true;// set a true della variabile condivisa lockvariable per permettere ad altri
+                                // thread di occuparla
+            this.notifyAll();// sveglio i thread in attesa per avvisarli che la variabile condivisa è
+                             // disponibile
         }
         if (flag == "prof") {
             while (lockvariable) {
-                System.out.println("while3");
                 try {
                     this.wait();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            lockvariable = true;
-            this.notifyAll();
+            lockvariable = true;// set a true della variabile condivisa lockvariable per permettere ad altri
+                                // thread di occuparla
+            this.notifyAll();// sveglio i thread in attesa per avvisarli che la variabile condivisa è
+                             // disponibile
         }
     }
 
+    // metodo che restituisce true se tutti i pc sono etichettati come free
+    // altrimenti restituisce false
     public synchronized boolean interolaboratoriolibero() {
 
         for (int i = 0; i < 20; i++) {

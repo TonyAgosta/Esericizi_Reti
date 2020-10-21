@@ -1,6 +1,5 @@
 //Tony Agosta 544090
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -10,36 +9,42 @@ public class Main {
         int i, indextesista;
         Scanner scan = new Scanner(System.in);
         System.out.println("Inserire il numero di studenti,tesisti e Professori:");
-        numstudenti = scan.nextInt();
-        numtesisti = scan.nextInt();
-        numprofessori = scan.nextInt();
+        numstudenti = scan.nextInt(); // numero di studenti che accedono al laboratorio
+        numtesisti = scan.nextInt(); // numero di tesisti che accedono al laboratorio
+        numprofessori = scan.nextInt();// numero di professori che accedono al laboratorio
         scan.close();
-        indextesista = (int) (Math.random() * 20);
-        totaleutenti = numprofessori + numstudenti + numtesisti;
-        int accesstudenti = (int) (Math.random() * 5) + 1;
-        int accesstesisti = (int) (Math.random() * 5) + 1;
-        int accessprofessori = (int) (Math.random() * 5) + 1;
+        indextesista = (int) (Math.random() * 20); // selezione di un numero random tra 0 e 20 per scegliere il pc a cui
+                                                   // devono lavorare i tesisti
+        totaleutenti = numprofessori + numstudenti + numtesisti; // numero totale di utenti che accedono al laboratorio
+        int accesstudenti = (int) (Math.random() * 5) + 1; // selezione di un numero random per determinare il numero di
+                                                           // accessi al laboratorio che fa ogni studente
+        int accesstesisti = (int) (Math.random() * 5) + 1; // selezione di un numero random per determinare il numero di
+                                                           // accessi al laboratorio che fa ogni tesista
+        int accessprofessori = (int) (Math.random() * 5) + 1; // selezione di un numero random per determinare il numero
+                                                              // di accessi al laboratorio che fa ogni professore
 
-        MonitorLaboratorio ML = new MonitorLaboratorio(numprofessori * accessprofessori, numtesisti * accesstesisti,
-                indextesista);
-        Studenti[] studenti = new Studenti[numstudenti];
-        Tesisti[] tesisti = new Tesisti[numtesisti];
-        Professori[] professori = new Professori[numprofessori];
+        MonitorLaboratorio ML = new MonitorLaboratorio(indextesista);
+        Studenti[] studenti = new Studenti[numstudenti]; // array di tipo Studenti che contiene i thread di tipo
+                                                         // "Studenti"
+        Tesisti[] tesisti = new Tesisti[numtesisti]; // array di tipo Tesisti che contiene i thread di tipo "Tesisti"
+        Professori[] professori = new Professori[numprofessori];// array di tipo Professori che contiene i thread di
+                                                                // tipo "Professori"
         System.out.println("accessi stud=" + accesstudenti);
-        for (i = 0; i < numstudenti; i++) {
-            studenti[i] = new Studenti(ML, numtesisti * accesstesisti, numprofessori * accessprofessori, accesstudenti);
+        for (i = 0; i < numstudenti; i++) {// inserisco i thread di tipo "Studenti" nel relativo array
+            studenti[i] = new Studenti(ML, accesstudenti);// argomenti : monitor e numero di accessi
         }
 
         System.out.println("accessi tes=" + accesstesisti);
-        for (i = 0; i < numtesisti; i++) {
-            tesisti[i] = new Tesisti(ML, indextesista, numprofessori * accessprofessori, accesstesisti);
+        for (i = 0; i < numtesisti; i++) {// inserisco i thread di tipo "Tesisti" nel relativo array
+            tesisti[i] = new Tesisti(ML, indextesista, accesstesisti);// argomenti : monitor, indici del pc da
+                                                                      // utilizzare e numero di accessi
         }
         System.out.println("accessi prof=" + accessprofessori);
-        for (i = 0; i < numprofessori; i++) {
-            professori[i] = new Professori(ML, accessprofessori);
+        for (i = 0; i < numprofessori; i++) {// inserisco i thread di "Professori" nel relativo array
+            professori[i] = new Professori(ML, accessprofessori); // argomenti : monitor e numero di accessi
         }
 
-        for (i = 0; i < totaleutenti; i++) {
+        for (i = 0; i < totaleutenti; i++) { // start di tutti i thread
             if (i < numprofessori)
                 professori[i].start();
             if (i < numtesisti)
