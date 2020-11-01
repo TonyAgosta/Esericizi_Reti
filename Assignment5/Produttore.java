@@ -1,22 +1,24 @@
+// Tony Agosta 544090
+
 import java.io.File;
-import java.util.LinkedList;
 
 public class Produttore extends Thread {
 
-    private LinkedList<File> directories;
     private File startDirectory;
     private Coda coda;
 
-    public Produttore(LinkedList<File> directories, File startDirectory, Coda coda) {
-        this.directories = directories;
+    public Produttore(File startDirectory, Coda coda) throws NullPointerException {
+        if (startDirectory == null || coda == null)
+            throw new NullPointerException();
         this.startDirectory = startDirectory;
         this.coda = coda;
     }
 
     public void run() {
 
-        File finalfile = new File("finalfile");
-        addDirectory(startDirectory);
+        File finalfile = new File("finalfile"); // nuovo file che viene aggiunto alla fine della linkelist per segnalare
+                                                // ai consumatori che i file e le directory sono finite
+        addDirectory(startDirectory);// inizio con l'aggiungere la directory di partenza
         try {
             Thread.sleep(4000);
         } catch (InterruptedException e) {
@@ -24,15 +26,17 @@ public class Produttore extends Thread {
             e.printStackTrace();
         }
         coda.lockcoda.lock();
-        coda.addfinal(finalfile);
+        coda.addfinal(finalfile);// aggiungo il file finale in coda
         coda.notEmpty.signalAll();
         coda.lockcoda.unlock();
 
     }
 
-    public void addDirectory(File dir) {
+    // metodo ricorsivo che aggiunge le directory e sottodirectory presenti
+    public void addDirectory(File dir) throws NullPointerException {
+        if (dir == null)
+            throw new NullPointerException();
         File[] filein = dir.listFiles();
-
         for (File file : filein) {
             if (file.isDirectory()) {
                 coda.lockcoda.lock();
