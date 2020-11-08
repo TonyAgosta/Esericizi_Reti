@@ -4,24 +4,27 @@ import java.util.ArrayList;
 
 public class Banca {
 
-    private final ArrayList<ContoCorrente> banca; // arraylist in cui vengonon salvati tutti i conti correnti
-    private int numCont;// numero di conti correnti
+    private ArrayList<ContoCorrente> listaconti = new ArrayList<ContoCorrente>();; // arraylist in cui vengonon salvati
+                                                                                   // tutti i conti correnti
     private int numOperazioni;// numero di operazioni per ogni conto corrente scelto in modo casuale
 
     // array di stringhe in cui vengono memorizzati i movimenti banacari possibili
-    private static final String[] movimenti = { "Bolletino", "F24", "PagoBancomat", "Bonifico", "Accredito" };
+    private static final String[] movimenti = { "Bollettino", "F24", "PagoBancomat", "Bonifico", "Accredito" };
 
     // array di stringhe in cui vengono memorizzati i nomi dei correntisti.
-    private final String[] correntisti;
+    private String[] correntisti;
+    private String conticorrenti[];
 
-    // COSTRUTTORE
-    public Banca(int k) {
-        this.banca = new ArrayList<ContoCorrente>();
-        this.numCont = k;
-        correntisti = new String[numCont];
-        for (int i = 0; i < k; i++)
+    public void exec() {
+        // listaconti = new ArrayList<ContoCorrente>();
+        int k = (int) (Math.random() * 10) + 1;
+        correntisti = new String[k];
+        conticorrenti = new String[k];
+        for (int i = 0; i < k; i++) {
             correntisti[i] = ("Correntista-" + i);
-
+            conticorrenti[i] = ("ContoCorrente-" + i);
+            setContoCorrente(conticorrenti[i], i);
+        }
     }
 
     // metodo che crea un nuovo conto corrente con i relativi campi: nome del
@@ -48,13 +51,13 @@ public class Banca {
             giorno = randomDay + "/" + randomMonth + "/" + randomYear; // composizione della data
             newconto.setMoviemento(movimenti[operazione], giorno);// set del movimento effettuato
         }
-        banca.add(newconto); // aggiunta del nuovo Conto Corrente alla lista dei Conti Correnti
+        listaconti.add(newconto); // aggiunta del nuovo Conto Corrente alla lista dei Conti Correnti
 
     }
 
-    // Restituisce tutta la lista dei Conti Correnti
+    // Restituisce tutta la lista dei Conti
     public ArrayList<ContoCorrente> getListaContiCorrenti() {
-        return banca;
+        return listaconti;
     }
 
 }
