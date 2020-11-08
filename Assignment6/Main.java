@@ -10,15 +10,17 @@ public class Main {
         //////// CREO IL FILE JSON///////
         ObjectMapper objctMapper = new ObjectMapper();
         Banca banca = new Banca();
-        banca.exec();
+        banca.addConto();
 
         try {
             File file = new File("ListaMovimenti.json");
             file.createNewFile();
             objctMapper.writeValue(file, banca);
-            Consumatori threadpool = new Consumatori();
+            Consumatori threadpool = new Consumatori(); // oggetto in cui è presente il threadpool che gestisce gli
+                                                        // oggetti json ricevuti
             Occorrenze occ = new Occorrenze();
-            Produttore gestione = new Produttore(threadpool, occ);
+            Produttore gestione = new Produttore(threadpool, occ); // oggetto usato per leggere dal file json gli
+                                                                   // oggetti json da passare al threadpool
             gestione.start();
         } catch (IOException e) {
             e.printStackTrace();

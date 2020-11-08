@@ -1,4 +1,8 @@
 //Tony Agosta 544090
+
+//La classe occorrenze continene i metodi usati per incrementare in modo thread-safe i valori delle occorrenze dei movimenti; 
+//inoltre contiene anche i metodi che vegono utilzzati per restituire il totale delle occorrenze di ogni tipo di causale
+
 public class Occorrenze {
     private int Bollettino;
     private int F24;

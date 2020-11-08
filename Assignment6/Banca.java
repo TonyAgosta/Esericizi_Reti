@@ -2,6 +2,9 @@
 
 import java.util.ArrayList;
 
+//La classe Banca ha il compito di creare e aggiungere i conti correnti alla lista dei conti correnti. 
+//Rappresenta la lista dei conti correnti
+
 public class Banca {
 
     private ArrayList<ContoCorrente> listaconti = new ArrayList<ContoCorrente>();; // arraylist in cui vengonon salvati
@@ -12,12 +15,11 @@ public class Banca {
     private static final String[] movimenti = { "Bollettino", "F24", "PagoBancomat", "Bonifico", "Accredito" };
 
     // array di stringhe in cui vengono memorizzati i nomi dei correntisti.
-    private String[] correntisti;
-    private String conticorrenti[];
+    private String[] correntisti; // array di stringhe in cui salvo i nomi dei correntisti
+    private String[] conticorrenti; // array di stringhe in cui salvo i nomi dei conticorrenti
 
-    public void exec() {
-        // listaconti = new ArrayList<ContoCorrente>();
-        int k = (int) (Math.random() * 10) + 1;
+    public void addConto() {
+        int k = (int) (Math.random() * 10) + 1; // numero di conti correnti da aggiungere
         correntisti = new String[k];
         conticorrenti = new String[k];
         for (int i = 0; i < k; i++) {

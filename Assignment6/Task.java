@@ -1,5 +1,7 @@
 //Tony Agosta 544090
 
+//La classe Task ha il solo compito di incrementare i valori delle occorrenze chiamando dei metodi(syncronized) definiti in una classe esterna
+
 public class Task implements Runnable {
 
     private String causale;
