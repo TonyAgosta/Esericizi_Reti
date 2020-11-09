@@ -1,7 +1,16 @@
 //Tony Agosta 544090
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
@@ -12,10 +21,18 @@ public class Main {
         Banca banca = new Banca();
         banca.addConto();
 
+        String path = "./ListaMovimenti.json";
+
         try {
-            File file = new File("ListaMovimenti.json");
-            file.createNewFile();
-            objctMapper.writeValue(file, banca);
+            Files.deleteIfExists(Paths.get(path));
+            Files.createFile(Paths.get(path));
+            ByteBuffer buf = ByteBuffer.wrap((objctMapper.writeValueAsBytes(banca)));
+            FileChannel outChannel = FileChannel.open(Paths.get(path), StandardOpenOption.WRITE);
+            outChannel.write(buf);
+            while (buf.hasRemaining()) {
+                outChannel.write(buf);
+            }
+            outChannel.close();
             Consumatori threadpool = new Consumatori(); // oggetto in cui è presente il threadpool che gestisce gli
                                                         // oggetti json ricevuti
             Occorrenze occ = new Occorrenze();

@@ -1,7 +1,11 @@
 //Tony Agosta 544090
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,53 +26,66 @@ public class Produttore extends Thread {
     public void run() {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        File newfile = new File("ListaMovimenti.json");
-        Banca bancajson;
+        String path = "./ListaMovimenti.json";
+        // Banca bancajson;
         ArrayList<ContoCorrente> object = new ArrayList<ContoCorrente>(); // arrayList in cui salvo la lista dei
-                                                                          // conticorrenti ricavati dal file json
+
         try {
+            FileChannel fis = FileChannel.open(Paths.get(path), StandardOpenOption.READ);
+            ByteBuffer buff = ByteBuffer.allocate(1024);
+            String s = new String();
+            while (fis.read(buff) > 0) {
+                buff.flip();
+                while (buff.hasRemaining()) {
+                    s = s + StandardCharsets.UTF_8.decode(buff).toString();
+
+                }
+                buff.clear();
+            }
+            fis.close();
+            Banca bancajson = objectMapper.readValue(s, Banca.class);
 
             // DESERIALIZZAZIONE DEL FILE JSON
-            bancajson = objectMapper.readValue(newfile, Banca.class);
 
-            ArrayList<ContoCorrente> listajson = bancajson.getListaContiCorrenti();// arrayList in cui salvo la lista,
-                                                                                   // di tutti i conti correnti,
-                                                                                   // ricavata dal file json
+            ArrayList<ContoCorrente> listajson = bancajson.getListaContiCorrenti();// arrayList in cui salvo la lista di
+                                                                                   // tutti i conti correnti ricavatadal
+                                                                                   // file json
 
             // Aggiungo all'arraylist dei conti correnti ogni singolo conto corrente che ho
             // trovato nel file json
             for (ContoCorrente newc : listajson) {
                 object.add(newc);
             }
-            ArrayList<CoppiaMovimenti> listadeimovimenti = new ArrayList<>(); // arraylist cin cui salvo la lista di
+            ArrayList<CoppiaMovimenti> listadeimovimenti = new ArrayList<>(); // arraylist cin cui salvo la lista di //
                                                                               // tutti i movimenti fatti
 
             // aggiungo all'arraylist dei movimenti ogni singolo movimento che ho trovato
             // nel file json
             for (int i = 0; i < listajson.size(); i++) {
                 listadeimovimenti.addAll(object.get(i).getListaMovimenti());
-            }
 
-            // creo tanti task quanti sono i movimenti individuati nella lista dei movimenti
-            // in modo tale che ogni singolo task porti al threadpool la causale, di ogni
-            // singolo movimento,per essere gestita
-            for (int i = 0; i < listadeimovimenti.size(); i++) {
-                Task task = new Task(listadeimovimenti.get(i).getCausale(), occ);
+                // creo tanti task quanti sono i movimenti individuati nella lista dei movimenti
+                // in modo tale che ogni singolo task porti al threadpool la causale, di ogni //
+                // singolo movimento,per essere gestita
+
+            }
+            for (int j = 0; j < listadeimovimenti.size(); j++) {
+                Task task = new Task(listadeimovimenti.get(j).getCausale(), occ);
                 threadpool.esecuzione(task);
             }
 
             // terminazione del threadpool
             threadpool.endpool();
 
-            // RISULTATI
-            System.out.println("Il numero di Bollettini è: " + occ.getBollettino());
-            System.out.println("Il numero di F24 è: " + occ.getF24());
-            System.out.println("Il numero di Accrediti è: " + occ.getAccredito());
-            System.out.println("Il numero di PagoBancomat è: " + occ.getPagoBancomat());
-            System.out.println("Il numero di Bonifici è: " + occ.getBonifico());
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // RISULTATI
+        System.out.println("Il numero di Bollettini è: " + occ.getBollettino());
+        System.out.println("Il numero di F24 è: " + occ.getF24());
+        System.out.println("Il numero di Accrediti è: " + occ.getAccredito());
+        System.out.println("Il numero di PagoBancomat è: " + occ.getPagoBancomat());
+        System.out.println("Il numero di Bonifici è: " + occ.getBonifico());
     }
 }
