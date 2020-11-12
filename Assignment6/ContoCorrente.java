@@ -1,13 +1,10 @@
 //Tony Agosta 544090
 
+//La classe ContoCorrente contiente i metodi per settere,e ottenere, i campi di un conto corrente
+
 import java.util.ArrayList;
 
 public class ContoCorrente {
-
-    // INNER CLASS
-    // utilizzata per creare coppie di stringhe in modo da simulare un movimento
-    // bancario
-
     private String NameCorrentista;
     private String nomeContoCorrente;
 
@@ -20,7 +17,8 @@ public class ContoCorrente {
         this.ListaMovimenti = new ArrayList<CoppiaMovimenti>();
     }
 
-    // metodo usato per settare il nome del Conto Corrente passato come argomento
+    // metodo usato per settare il nome del Conto Corrente. Il nome da usare viene
+    // passato come parametro del metodo
     public void setNameContoCorrente(String s) throws NullPointerException {
         if (s == null)
             throw new NullPointerException();
@@ -29,7 +27,7 @@ public class ContoCorrente {
 
     // metodo usato per settare il movimento bancario effettuato: set del campo
     // causale e del campo data
-    public void setMoviemento(String mov, String dat) throws NullPointerException {
+    public void setMovimento(String mov, String dat) throws NullPointerException {
         if (mov == null)
             throw new NullPointerException();
         CoppiaMovimenti newMovimento = new CoppiaMovimenti();

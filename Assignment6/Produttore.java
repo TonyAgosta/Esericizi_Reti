@@ -1,5 +1,8 @@
 //Tony Agosta 544090
 
+//La classe produttore ha il compito di leggere dal file json gli oggetti json per poi passarli ,
+//tramite opportuni metodi,al threadpool che si occuperà della gestione degli oggetti ricevuti
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -9,9 +12,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-//La classe produttore ha il compito di leggere dal file json gli oggetti json per poi passarli ,tramite opportuni metodi, al threadpool
-//che si occuperà della gestione degli oggetti ricevuti
 
 public class Produttore extends Thread {
     private Consumatori threadpool;
@@ -25,11 +25,11 @@ public class Produttore extends Thread {
 
     public void run() {
 
+        // DESERIALIZZAZIONE FILE JSON
         ObjectMapper objectMapper = new ObjectMapper();
         String path = "./ListaMovimenti.json";
-        // Banca bancajson;
-        ArrayList<ContoCorrente> object = new ArrayList<ContoCorrente>(); // arrayList in cui salvo la lista dei
 
+        // Lettura dal file json
         try {
             FileChannel fis = FileChannel.open(Paths.get(path), StandardOpenOption.READ);
             ByteBuffer buff = ByteBuffer.allocate(1024);
@@ -45,30 +45,25 @@ public class Produttore extends Thread {
             fis.close();
             Banca bancajson = objectMapper.readValue(s, Banca.class);
 
-            // DESERIALIZZAZIONE DEL FILE JSON
-
             ArrayList<ContoCorrente> listajson = bancajson.getListaContiCorrenti();// arrayList in cui salvo la lista di
-                                                                                   // tutti i conti correnti ricavatadal
+                                                                                   // tutti i conti correnti ricavata
+                                                                                   // dal
                                                                                    // file json
 
-            // Aggiungo all'arraylist dei conti correnti ogni singolo conto corrente che ho
-            // trovato nel file json
-            for (ContoCorrente newc : listajson) {
-                object.add(newc);
-            }
-            ArrayList<CoppiaMovimenti> listadeimovimenti = new ArrayList<>(); // arraylist cin cui salvo la lista di //
-                                                                              // tutti i movimenti fatti
+            ArrayList<CoppiaMovimenti> listadeimovimenti = new ArrayList<>(); // arraylist in cui salvo la lista di
+                                                                              // tutti i movimenti presenti nei conti
+                                                                              // correnti
 
             // aggiungo all'arraylist dei movimenti ogni singolo movimento che ho trovato
             // nel file json
             for (int i = 0; i < listajson.size(); i++) {
-                listadeimovimenti.addAll(object.get(i).getListaMovimenti());
-
-                // creo tanti task quanti sono i movimenti individuati nella lista dei movimenti
-                // in modo tale che ogni singolo task porti al threadpool la causale, di ogni //
-                // singolo movimento,per essere gestita
-
+                listadeimovimenti.addAll(listajson.get(i).getListaMovimenti());
             }
+
+            // creo tanti task quanti sono i movimenti individuati nella lista dei movimenti
+            // in modo tale che ogni singolo task porti al threadpool la causale, di ogni //
+            // singolo movimento,per essere gestita
+
             for (int j = 0; j < listadeimovimenti.size(); j++) {
                 Task task = new Task(listadeimovimenti.get(j).getCausale(), occ);
                 threadpool.esecuzione(task);

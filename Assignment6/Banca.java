@@ -1,9 +1,9 @@
 //Tony Agosta 544090
 
-import java.util.ArrayList;
-
 //La classe Banca ha il compito di creare e aggiungere i conti correnti alla lista dei conti correnti. 
 //Rappresenta la lista dei conti correnti
+
+import java.util.ArrayList;
 
 public class Banca {
 
@@ -14,7 +14,6 @@ public class Banca {
     // array di stringhe in cui vengono memorizzati i movimenti banacari possibili
     private static final String[] movimenti = { "Bollettino", "F24", "PagoBancomat", "Bonifico", "Accredito" };
 
-    // array di stringhe in cui vengono memorizzati i nomi dei correntisti.
     private String[] correntisti; // array di stringhe in cui salvo i nomi dei correntisti
     private String[] conticorrenti; // array di stringhe in cui salvo i nomi dei conticorrenti
 
@@ -51,7 +50,7 @@ public class Banca {
             randomMonth = (int) (Math.random() * 12) + 1;// selezione casuale di un mese
             randomYear = (int) (Math.random() * 2) + 2018;// selezione casuale di anno tra il 2018 e il 2020
             giorno = randomDay + "/" + randomMonth + "/" + randomYear; // composizione della data
-            newconto.setMoviemento(movimenti[operazione], giorno);// set del movimento effettuato
+            newconto.setMovimento(movimenti[operazione], giorno);// set del movimento effettuato
         }
         listaconti.add(newconto); // aggiunta del nuovo Conto Corrente alla lista dei Conti Correnti
 
