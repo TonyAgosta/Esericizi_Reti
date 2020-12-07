@@ -4,15 +4,17 @@ import java.net.UnknownHostException;
 
 public class MainServer {
 
-    // indirizzo del gruppo di multicast
-    final static String DEFAULT_DATE_GROUP = "239.255.1.3";
-
-    // porta associata all'indirizzo di multicast
-
-    final static int DEFAULT_DATE_PORT = 30000;
-
     public static void main(String[] args) {
+        String DEFAULT_DATE_GROUP; // indirizzo del gruppo di multicast
+        try {
+            DEFAULT_DATE_GROUP = args[0];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Inserire l'indirizzo IP di DATEGROUP");
+            return;
+        }
+        DEFAULT_DATE_GROUP = args[0];
 
+        int DEFAULT_DATE_PORT = 30000; // porta associata all'indirizzo di multicast
         try {
             // crea e avvia il Server
             Server server = new Server(DEFAULT_DATE_GROUP, DEFAULT_DATE_PORT);
