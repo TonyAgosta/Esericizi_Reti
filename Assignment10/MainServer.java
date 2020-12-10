@@ -12,7 +12,7 @@ public class MainServer {
             System.out.println("Inserire l'indirizzo IP di DATEGROUP");
             return;
         }
-        DEFAULT_DATE_GROUP = args[0];
+        // DEFAULT_DATE_GROUP = args[0];
 
         int DEFAULT_DATE_PORT = 30000; // porta associata all'indirizzo di multicast
         try {
