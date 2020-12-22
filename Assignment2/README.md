@@ -1,3 +1,4 @@
+# Simulazione di un ufficio postale
 Simulare il flusso di clienti in un ufficio postale che ha 4 sportelli. Nell'ufficio esiste:
 
 un'ampia sala d'attesa in cui ogni persona può entrare liberamente. Quando entra, ogni persona prende il numero dalla numeratrice e aspetta il proprio turno in questa sala.
