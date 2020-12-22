@@ -1,3 +1,4 @@
+# Gestione Conti Correnti con NIO e JSON
 Creare un file contenente oggetti che rappresentano i conti correnti di una banca. Ogni conto corrente contiene il nome del correntista ed una lista di movimenti. I movimenti 
 registrati per un conto corrente sono relativi agli ultimi 2 anni, quindi possono essere molto numerosi.
 Per ogni movimento vengono registrati la data e la causale del movimento. L'insieme delle causali possibili è fissato: Bonfico, Accredito, Bollettino, F24, PagoBancomat.
